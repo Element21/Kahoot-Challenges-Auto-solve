@@ -1,8 +1,17 @@
+// ==UserScript==
+// @name         Kahoot Challenge Auto Solve
+// @icon         https://petermlarson.com/wp-content/uploads/2020/04/Kahoot-logo.png
+// @version      1.0.2
+// @description  A Kahoot Challenges auto solver and answerer
+// @author       Element21 && East_Arctica
+// @match        https://kahoot.it/challenge/*
+// @namespace    https://greasyfork.org/en/users/551095
+// @run-at document-end
+// ==/UserScript==
+
+debugger;
 if (document.location.href.search("kahoot.it/challenge") == -1) {
     throw new Error("You aren't on a kahoot challenge. If you think this is an error please DM Dude803#4472 on discord!")
-}
-if (!window.KahootAnswerHighlighterExecuted) {
-    throw new Error("Already ran kahoot hack!");
 }
 
 let oldQuestion = '';
@@ -28,21 +37,32 @@ if (autoAnswer.includes('y') || autoAnswer.includes('Y')) {
   const QuizData = JSON.parse(xhttp.responseText);
   const Questions = QuizData.kahoot.questions;
   function OnQuestion() {
-    for (let i = 0; i < Questions.length; i += 1) {
-      for (let x = 0; x < Questions[i].choices.length; x += 1) {
-        if (Questions[i].choices[x].correct) {
+
+    // find correct question
+    var qid = 0;
+    var qid2 = qid;
+    for (let i = 0; i < Questions.length; i += 1){
+      if (document.getElementsByClassName('question-title__Title-sc-1aryxsk-1')[0].innerText === Questions[i].question){
+        qid = i;
+      }
+    }
+
+      for (let x = 0; x < Questions[qid].choices.length; x += 1) {
+        if (Questions[qid].choices[x].correct) {
           const a = document.getElementsByClassName('question-choices__QuestionChoices-vfgbd-0')[0].children;
           for (let y = 0; y < a.length; y += 1) {
-            if (a[y].children[1].children[0].innerHTML === Questions[i].choices[x].answer) {
+            if (a[y].children[1].children[0].innerText === Questions[qid].choices[x].answer) {
               if (delay.length >= 1) {
                 setTimeout(a[y].children[1].children[0].click(), Math.floor(Math.random() * 15) + 1); // Sets delay to a random integer from 1 to 15 and uses it a PRESS delay
               }
-              a[y].children[1].children[0].click(); // PRESS Correct answer
+              if (confirm('Answer: ' + Questions[qid].choices[x].answer )) {
+                  a[y].children[1].children[0].click(); // PRESS Correct answer
+              } else{
+              }
             }
           }
         }
       }
-    }
   }
   // New Question Detection
   function CheckQuestion() {
